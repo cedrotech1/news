@@ -42,12 +42,14 @@ mongoose.connect(uri, {
     }
   }))
 
+const categoryRoute = require('./route/category');
 const articleRoute = require('./route/article');
 const usersRoute = require('./route/users');
 
 
 app.use('/article', articleRoute);
 app.use('/users', usersRoute);
+app.use('/category', categoryRoute);
 
 
 

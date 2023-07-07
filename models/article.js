@@ -5,6 +5,10 @@ const articleShema= new mongoose.Schema({
     image: String,
     published: Boolean,
     addedat: Date,
+    categoryid:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'category',
+    },
   
     userid:{
         type:mongoose.Schema.Types.ObjectId,
@@ -12,17 +16,14 @@ const articleShema= new mongoose.Schema({
     },
     comments:[
         {
-            body:String,
+            content:String,
             email:String,
             addedat: Date,
-            articleId:String
+            // articleId:String
         }
     ],
     likes:[ {
-        body:String,
         email:String,
-        addedat: Date,
-        articleId:String
     }],
 
     

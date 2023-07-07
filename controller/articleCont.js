@@ -6,6 +6,13 @@ const {verifyauto}=require("../mindlewares/autho");
 
 //   ________________ALL articleS____________________________
 
+var today = new Date();
+var dd = String(today.getDate()).padStart(2, "0");
+var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+var yyyy = today.getFullYear();
+
+    today = dd + "/" + mm + "/" + yyyy;
+
 const getALL=async (req, res) => {
     try {
          const data= await article.find({
@@ -13,10 +20,9 @@ const getALL=async (req, res) => {
         }).populate({
           path: 'userid',
           select: 'fname lname',
-          // populate: {
-          //   path: 'hostelid',
-          //   select: 'name location',
-          // }, // Specify the fields you want to include
+        }).populate({
+          path: 'categoryid',
+          select: 'title',
         });
          
             res.send({data:data}) 
@@ -24,56 +30,6 @@ const getALL=async (req, res) => {
         res.send(error)
     }  
   }
-
-  const Operation=async (req, res) => {
-    try {
-         let  data= await article.find().populate("roomid");
-       
-        data= data.filter(data=> data.roomid.roomnumber>100)
-         
-            res.send({data:data}) 
-
-
-
-    } catch (error) {
-        res.send(error)
-    }  
-  }
-
-
-
-  const Login = async (req, res) => {
-    try {
-      const usernamex = req.body.usernamex;
-      const passwordx = req.body.passwordx;
-  
-      const articleData = await article.findOne({ username: usernamex }).select('password username fname lname');
-
-          if (!articleData) {
-            res.send({message:'invalid username!'});
-            return;
-          }
-
-          const storedPassword = articleData.password;
-    
-      // // Compare the provided password with the stored hashed password
-              const passwordMatch = await b.compare(passwordx, storedPassword);
-              if (passwordMatch) 
-              {
-                const secret="am cedrick";
-                // req.session.article=usernamex;
-                // console.log(req.session.article);
-                 const token=jwt.sign({data:articleData},secret);
-                res.send({message:'Login successful!',token});
-              } else {
-                res.send({message:'Invalid  password'});
-              }
-
-    } catch (error) {
-      res.send(error);
-    }
-  };
-  
 
 
 
@@ -147,6 +103,7 @@ const getALL=async (req, res) => {
     const image = req.body.image;
     const published = req.body.published;
     const userid = req.body.userid;
+    const categoryid = req.body.categoryid;
    
   
     try {
@@ -179,8 +136,9 @@ const Update=(req, res) => {
      const age=req.body.age;
      const username=req.body.username;
      const roomid=req.body.roomid;
+     const categoryid = req.body.categoryid;
      
-     const data={fname,lname,roomid,age,gender,username}
+     const data={fname,lname,roomid,age,gender,username,categoryid}
      
      // const oneskills = new skills(data);
      article.findByIdAndUpdate(id,data)
@@ -215,6 +173,80 @@ const Delete = async (req, res) => {
   }
 };
 
+const  AddC= async(req, res) => {
+  let email = req.body.email;
+  let content = req.body.content;
+  let article_id = req.body.article_id;
+  let addedat=today
+  // console.log(content);
+ 
+  try {
+        
+         const dataX={email,content,addedat};
+        //  console.log(dataX);
+
+        // const oneuser = new users.comment(data);
+        const data = await article.findById(article_id);
+        data.comments.push(dataX)
+        await data.save();
+
+        if (!data) {
+          return res.status(404).json({ error: 'article not found' });
+        }
+    
+              
+        // const response = await oneuser.save();
+        res.send(data);
+      }
+   catch (err) {
+    res.send({ error: err.message });
+  }
+};
+
+const  Like= async(req, res) => {
+  let email = req.body.email;
+  // let content = req.body.content;
+  let article_id = req.body.article_id;
+  let addedat=today
+  // console.log(content);
+ 
+  try {
+        
+         const dataX={email};
+
+        const data = await article.findById(article_id);
+   
+
+        if (!data) {
+          return res.status(404).json({ error: 'article not found' });
+        }
+        else{
+
+          const dataLikes=data.likes;
+       
+          
+          const filteredArray = dataLikes.filter(obj => obj.email === email);
+          
+          // console.log(filteredArray);
+          // const lengths=filteredArray.length;
+          if(filteredArray.length==0){
+            // res.send("comment now");
+                 data.likes.push(dataX)
+                await data.save();
+                res.send(data.likes);
+          }else{
+            res.send("sorry you can not like article twice");
+          }
+
+        }
+
+        
+      }
+   catch (err) {
+    res.send({ error: err.message });
+  }
+};
+
   module.exports={
     getALL,
     One,
@@ -222,7 +254,6 @@ const Delete = async (req, res) => {
     Update,
     Delete,
     getList,
-    Operation,
-    Login,
-    test
+    AddC,
+    Like
   }
