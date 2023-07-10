@@ -1,7 +1,27 @@
 const express = require('express');
 const router = express.Router();
-// const student=require("../models/student");
 const {verifyauto}=require("../mindlewares/autho");
+const article=require("../models/article");
+
+
+
+const multer = require('multer');
+
+const storage=multer.diskStorage({
+
+  destination:(req,file,cb)=>{
+    cb(null,'./upload/');
+
+  },
+  filename:(req,file,cb)=>{
+    cb(null,file.originalname);
+
+  }
+})
+
+
+const upload=multer({storage:storage})
+
 
 const {getALL,One,Add,Update,Delete,getList,AddC,Like}=require("../controller/articleCont");
 
@@ -14,6 +34,10 @@ const {getALL,One,Add,Update,Delete,getList,AddC,Like}=require("../controller/ar
   router.delete("/delete/:id",Delete)
   router.post('/comment', AddC)
   router.post('/like', Like)
+
+
+
+  router.post('/test', upload.single("ArticleImage"), Add)
 
   // router.get('/test', test)
 

@@ -104,12 +104,13 @@ const getALL=async (req, res) => {
     const published = req.body.published;
     const userid = req.body.userid;
     const categoryid = req.body.categoryid;
+    const ArticleImage = req.file.path;
    
   
     try {
 
      
-          const data = {title, body, image, published,userid};
+          const data = {title, body, image, published,userid,ArticleImage};
           const onearticle = new article(data);
                 
           const response = await onearticle.save();
@@ -226,9 +227,7 @@ const  Like= async(req, res) => {
        
           
           const filteredArray = dataLikes.filter(obj => obj.email === email);
-          
-          // console.log(filteredArray);
-          // const lengths=filteredArray.length;
+
           if(filteredArray.length==0){
             // res.send("comment now");
                  data.likes.push(dataX)

@@ -5,6 +5,7 @@ const articleShema= new mongoose.Schema({
     image: String,
     published: Boolean,
     addedat: Date,
+    ArticleImage:String,
     categoryid:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'category',

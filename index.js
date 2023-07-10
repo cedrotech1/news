@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 // const { Schema } = mongoose;
 app.use(express.json());
 app.use(cookieParser());
+app.use("/upload",express.static("upload"));
 
 const uri = 'mongodb://127.0.0.1:27017/article';
 
